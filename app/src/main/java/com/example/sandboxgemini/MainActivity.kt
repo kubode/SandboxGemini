@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.Icon
@@ -24,6 +25,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -160,6 +162,12 @@ private fun GeminiScreen(
     onSendClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val lazyListState = rememberLazyListState()
+    val lastMessage = screenState.messages.lastOrNull()
+    LaunchedEffect(lastMessage) {
+        lastMessage ?: return@LaunchedEffect
+        lazyListState.animateScrollToItem(lazyListState.layoutInfo.totalItemsCount - 1)
+    }
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -170,6 +178,7 @@ private fun GeminiScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f),
+            state = lazyListState,
             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
